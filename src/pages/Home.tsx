@@ -21,7 +21,6 @@ export default function Home() {
     dispatch(setFilters(formFilters));
   };
 
-  // Dispara busca ao mudar os filtros globais
   useEffect(() => {
     dispatch<any>(fetchGames());
   }, [filters]);
@@ -30,7 +29,6 @@ export default function Home() {
     <div className="min-h-screen bg-white text-zinc-900 dark:bg-[#111] dark:text-white transition-colors duration-300 pt-24 px-4 md:px-8">
       <div className="min-h-screen bg-[#0c0c0c] text-white px-4 md:px-10 py-10">
         <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-8">
-          {/* Gêneros */}
           <div>
             <label className="block mb-2 text-sm font-semibold text-zinc-400">
               Genres
@@ -63,7 +61,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Plataforma */}
           <div>
             <label className="block mb-2 text-sm font-semibold text-zinc-400">
               Platform
@@ -91,7 +88,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* RAM */}
           <div>
             <label className="block mb-2 text-sm font-semibold text-zinc-400">
               RAM
@@ -111,7 +107,6 @@ export default function Home() {
             />
           </div>
 
-          {/* Submit */}
           <div>
             <button
               type="submit"
@@ -122,7 +117,6 @@ export default function Home() {
           </div>
         </form>
 
-        {/* Resultado */}
         <div className="mt-12">
           {loading ? (
             <p className="text-center text-sm text-zinc-400">

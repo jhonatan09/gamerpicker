@@ -9,7 +9,6 @@ import {
   REGISTER,
 } from "redux-persist";
 
-// store/index.ts
 export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>

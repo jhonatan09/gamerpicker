@@ -17,12 +17,6 @@ export default function GameCard({ game }: GameCardProps) {
         <div className="p-4">
           <h3 className="text-lg font-bold text-white">{game.title}</h3>
           <p className="text-sm text-purple-400">{game.genre}</p>
-          <p className="text-sm text-gray-300">
-            RAM Mínima:{" "}
-            {game.min_ram && !isNaN(parseInt(game.min_ram))
-              ? `${parseInt(game.min_ram)} GB`
-              : "N/A"}
-          </p>
           <p className="text-gray-300 text-sm mt-2 line-clamp-2">
             {game.short_description}
           </p>

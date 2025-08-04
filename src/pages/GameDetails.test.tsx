@@ -6,7 +6,6 @@ import axios from "axios";
 import { vi } from "vitest";
 import mockGame from "../utils/game.mock";
 
-// Corrige tipagem do mock do axios
 vi.mock("axios");
 const mockedAxios = axios as unknown as {
   get: ReturnType<typeof vi.fn>;
@@ -14,7 +13,6 @@ const mockedAxios = axios as unknown as {
 
 describe("GameDetails", () => {
   it("renders game details correctly", async () => {
-    // Retorna um array como esperado por .find()
     mockedAxios.get = vi.fn().mockResolvedValueOnce({ data: [mockGame] });
 
     render(

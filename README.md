@@ -1,70 +1,169 @@
-# React + TypeScript + Vite
+# 🎮 Game Picker
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicação web construída com React 19 + Redux Toolkit + TailwindCSS, que permite aos usuários visualizar e filtrar jogos gratuitos por gênero, plataforma e requisitos mínimos de RAM.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🔧 Tecnologias Utilizadas
 
-## Expanding the ESLint configuration
+- [React 19](https://react.dev/)
+- [Redux Toolkit](https://redux-toolkit.js.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Vitest](https://vitest.dev/) para testes unitários
+- [Axios](https://axios-http.com/) para requisições HTTP
+- [Vite](https://vitejs.dev/) como bundler
+- [React Router v7](https://reactrouter.com/en/main)
+- [Redux Persist](https://github.com/rt2zz/redux-persist)
+- [Storybook](https://storybook.js.org/) para documentação de componentes
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🚀 Como rodar o projeto localmente
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+### Pré-requisitos
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- Node.js (v18 ou superior)
+- NPM ou Yarn
+
+---
+
+### 🔁 Backend (API de scraping)
+
+A aplicação depende de um pequeno servidor Node.js que faz scraping de requisitos técnicos dos jogos (ex: RAM mínima).  
+Antes de iniciar o frontend, **é necessário rodar esse backend**.
+
+1. Clone o repositório do backend:
+
+   ```bash
+   git clone https://github.com/jhonatan09/gamerpickerapi.git
+   cd gamerpickerapi
+   ```
+
+2. Instale as dependências:
+
+   ```bash
+   npm install
+   ```
+
+3. Inicie o servidor:
+
+   ```bash
+   npm start
+   ```
+
+   A API estará disponível em `http://localhost:3000/specs`
+
+---
+
+### 💻 Frontend
+
+1. Clone este repositório:
+
+   ```bash
+   git clone https://github.com/seu-usuario/game-picker.git
+   cd game-picker
+   ```
+
+2. Instale as dependências:
+
+   ```bash
+   npm install
+   ```
+
+3. Execute o projeto:
+
+   ```bash
+   npm run dev
+   ```
+
+   A aplicação estará disponível em `http://localhost:5173`
+
+---
+
+### ✅ Rodar testes:
+
+```bash
+npm run test
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### 📚 Rodar Storybook:
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run storybook
 ```
-# gamerpicker
+
+---
+
+## 📁 Estrutura do Projeto
+
+```
+src/
+│
+├── components/           # Componentes reutilizáveis como GameCard, GameGrid, Header
+├── pages/                # Páginas principais: Home, GameDetails
+├── store/                # Redux: slices, store e tipos
+│   └── game/             # Slice específico para lógica dos jogos
+├── utils/                # Funções utilitárias (ex: mocks para testes)
+├── tests/                # Testes unitários com Vitest
+├── App.tsx               # Componente raiz com Router
+├── main.tsx              # Entrada da aplicação
+└── index.css             # CSS global com Tailwind
+```
+
+---
+
+## 🧠 Funcionalidades
+
+- ✅ Listagem de jogos via API pública [FreeToGame](https://www.freetogame.com/)
+- ✅ Filtros manuais por:
+  - Gênero
+  - Plataforma
+  - RAM mínima (via scraping do site original)
+- ✅ Detalhes do jogo com informações técnicas adicionais
+- ✅ Skeleton loading enquanto carrega
+- ✅ Design responsivo com Tailwind
+
+---
+
+## ✅ Testes
+
+- Testes unitários com [Vitest](https://vitest.dev/)
+- Utiliza [@testing-library/react](https://testing-library.com/docs/react-testing-library/intro/)
+- Testes cobrem:
+  - Renderização de componentes
+  - Lógica de exibição dos filtros
+  - Simulação de requisições com mocks
+
+---
+
+## 📦 Build
+
+Para gerar a versão final de produção:
+
+```bash
+npm run build
+```
+
+Arquivos finais estarão na pasta `dist/`.
+
+---
+
+## 📖 Observações
+
+- O estado global da aplicação (tema e filtros) é persistido com `redux-persist`.
+- Scroll infinito está desativado por decisão de estabilidade.
+- O projeto possui integração com Storybook para documentação dos componentes.
+- A estrutura de i18n está iniciada, mas **a funcionalidade de múltiplos idiomas ainda não está implementada**.
+
+---
+
+## 📬 Contato
+
+Caso deseje discutir este projeto em uma entrevista ou tenha sugestões:
+
+**Jhonatan Cardoso Moreira**  
+[LinkedIn](https://www.linkedin.com/in/jhonatan-cardoso-moreira/)  
+[GitHub (Frontend)](https://github.com/seu-usuario/game-picker)  
+[GitHub (Backend)](https://github.com/jhonatan09/gamerpickerapi)

@@ -21,7 +21,7 @@ export default function GameCard({ game }: GameCardProps) {
             {game.short_description}
           </p>
           <span className="inline-block mt-3 text-sm text-blue-400 hover:underline">
-            Ver detalhes
+            Ver mais
           </span>
         </div>
       </div>

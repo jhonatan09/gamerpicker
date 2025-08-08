@@ -11,7 +11,6 @@ export const fetchGames = createAsyncThunk(
 
     try {
       const res = await axios.get<Game[]>("/api/games");
-
       const games = res.data;
 
       const gamesWithCache = games.filter((game) =>
@@ -34,11 +33,21 @@ export const fetchGames = createAsyncThunk(
 
             const memoryStr =
               specsRes.data?.memory || specsRes.data?.Memory || "";
-            const ramMatch = memoryStr.match(/\d+/);
-            const min_ram = ramMatch ? ramMatch[0] : "N/A";
+            let min_ram = "N/A";
+
+            if (memoryStr) {
+              const ramMatch = memoryStr.match(/\d+/);
+              if (ramMatch) {
+                const value = parseInt(ramMatch[0], 10);
+                if (/mb/i.test(memoryStr)) {
+                  min_ram = Math.ceil(value / 1024).toString();
+                } else {
+                  min_ram = value.toString();
+                }
+              }
+            }
 
             ramCache.set(game.freetogame_profile_url, min_ram);
-
             return { ...game, min_ram };
           } catch (e) {
             ramCache.set(game.freetogame_profile_url, "N/A");
@@ -56,6 +65,8 @@ export const fetchGames = createAsyncThunk(
         ...notScraped.map((game) => ({ ...game, min_ram: "N/A" })),
       ];
 
+      const minRamFilter = state.game.filters.ram;
+
       const filtered = enrichedGames.filter((game) => {
         const ramStr = game.min_ram;
         const ramNum = parseInt(ramStr.replace(/[^\d]/g, ""), 10);
@@ -64,12 +75,13 @@ export const fetchGames = createAsyncThunk(
           return false;
         }
 
-        const ramMatch =
-          !state.game.filters.ram || ramNum >= state.game.filters.ram;
+        const ramMatch = !minRamFilter || ramNum <= minRamFilter;
 
+        const gameGenres = game.genre.split(",").map((g) => g.trim());
         const genreMatch =
           state.game.filters.genres.length === 0 ||
-          state.game.filters.genres.includes(game.genre);
+          state.game.filters.genres.some((genre) => gameGenres.includes(genre));
+
         const platformMatch =
           state.game.filters.platform === "ambos" ||
           game.platform
@@ -81,7 +93,7 @@ export const fetchGames = createAsyncThunk(
 
       return filtered;
     } catch (error) {
-      console.error(" Erro ao buscar jogos:", error);
+      console.error("Erro ao buscar:", error);
       throw error;
     }
   }

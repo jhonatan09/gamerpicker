@@ -1,59 +1,54 @@
-/// <reference types="vitest" />
-import { render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { describe, it, expect } from "vitest";
+import { render, screen, fireEvent } from "@testing-library/react";
+import { MemoryRouter, Routes, Route, useParams } from "react-router-dom";
+
 import GameCard from "./GameCard";
-import type { Game } from "../store/game/types";
+import { GAME_ALPHA as game } from "../utils/test/data.mocks";
+
+function Probe() {
+  const { id } = useParams();
+  return <div data-testid="details-probe">Rota detalhes: {id}</div>;
+}
+
+function renderWithRouter() {
+  return render(
+    <MemoryRouter initialEntries={["/"]}>
+      <Routes>
+        <Route path="/" element={<GameCard game={game as any} />} />
+        <Route path="/games/:id" element={<Probe />} />
+      </Routes>
+    </MemoryRouter>
+  );
+}
 
 describe("GameCard", () => {
-  const mockGame: Game = {
-    id: 1,
-    title: "Test Game",
-    thumbnail: "https://example.com/thumb.jpg",
-    short_description: "Test description",
-    genre: "Shooter",
-    platform: "PC (Windows)",
-    min_ram: "8 GB",
-    game_url: "",
-    publisher: "",
-    developer: "",
-    release_date: "",
-    freetogame_url: "",
-    freetogame_profile_url: "",
-  };
+  it("renderiza titulo, genero, descricao e imagem", () => {
+    renderWithRouter();
+    expect(
+      screen.getByRole("heading", { name: game.title })
+    ).toBeInTheDocument();
+    expect(screen.getByText(game.genre)).toBeInTheDocument();
 
-  it("renders the game title and thumbnail", () => {
-    render(
-      <MemoryRouter>
-        <GameCard game={mockGame} />
-      </MemoryRouter>
-    );
-    expect(screen.getByText("Test Game")).toBeInTheDocument();
-    expect(screen.getByAltText("Test Game")).toHaveAttribute(
-      "src",
-      mockGame.thumbnail
-    );
+    expect(screen.getByText(game.short_description)).toBeInTheDocument();
+
+    const img = screen.getByRole("img", {
+      name: game.title,
+    }) as HTMLImageElement;
+    expect(img).toBeInTheDocument();
+    expect(img.src).toBe(game.thumbnail);
+    expect(img.alt).toBe(game.title);
+    const link = screen.getByRole("link");
+    expect(link.getAttribute("href")).toBe(`/games/${game.id}`);
   });
 
-  it("shows genre and platform", () => {
-    render(
-      <MemoryRouter>
-        <GameCard game={mockGame} />
-      </MemoryRouter>
+  it("ao clicar no link, navega para /games/:id", () => {
+    renderWithRouter();
+
+    const link = screen.getByRole("link");
+    fireEvent.click(link);
+
+    expect(screen.getByTestId("details-probe")).toHaveTextContent(
+      `Rota detalhes: ${game.id}`
     );
-
-    expect(screen.getByText(/Shooter/i)).toBeInTheDocument();
-
-    // Usa queryByText com fallback seguro
-    const platformMatch = screen.queryByText(/PC/i);
-    expect(platformMatch).toBeTruthy();
-  });
-
-  it("shows min_ram if available", () => {
-    render(
-      <MemoryRouter>
-        <GameCard game={mockGame} />
-      </MemoryRouter>
-    );
-    expect(screen.getByText(/8 GB/i)).toBeInTheDocument();
   });
 });

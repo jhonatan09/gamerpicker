@@ -4,6 +4,10 @@ import Header from "../components/Header";
 describe("Header", () => {
   it("renders the app title", () => {
     render(<Header />);
-    expect(screen.getByText("🎮 Gamer Picker")).toBeInTheDocument();
+    const title = screen.getByRole("heading", {
+      name: /gamer picker/i,
+      level: 1,
+    });
+    expect(title).toBeInTheDocument();
   });
 });

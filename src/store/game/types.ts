@@ -32,4 +32,6 @@ export interface GameState {
   games: Game[];
   loading: boolean;
   error: string | null;
+  page: number;
+  hasMore: boolean;
 }

@@ -1,16 +1,23 @@
 import { useSelector, useDispatch } from "react-redux";
-import { fetchGames, setFilters } from "../store/game";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
+import { fetchGames } from "../store/game/actions";
+import { setFilters } from "../store/game/slice";
 import type { RootState } from "../store";
 import GameGrid from "../components/GameGrid";
 
 export default function Home() {
   const dispatch = useDispatch();
-  const { games, filters, loading } = useSelector(
+  const { games, filters, loading, hasMore, error } = useSelector(
     (state: RootState) => state.game
   );
 
-  const [formFilters, setFormFilters] = useState(filters);
+  const [formFilters, setFormFilters] = useState(() => ({
+    genres: filters.genres.length ? filters.genres : ["Shooter"],
+    platform: filters.platform || "ambos",
+    ram: filters.ram || 0,
+  }));
+
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
   const handleChange = (field: string, value: any) => {
     setFormFilters((prev) => ({ ...prev, [field]: value }));
@@ -25,8 +32,24 @@ export default function Home() {
     dispatch<any>(fetchGames());
   }, [filters]);
 
+  const loadMoreRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (loading || !hasMore) return;
+      if (observerRef.current) observerRef.current.disconnect();
+
+      observerRef.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          dispatch<any>(fetchGames());
+        }
+      });
+
+      if (node) observerRef.current.observe(node);
+    },
+    [loading, hasMore, dispatch]
+  );
+
   return (
-    <div className="min-h-screen bg-white text-zinc-900 dark:bg-[#111] dark:text-white transition-colors duration-300 pt-24 px-4 md:px-8">
+    <div className="min-h-screen bg-white text-zinc-900 dark:bg-[#111] dark:text-white transition-colors duration-300 pt-24">
       <div className="min-h-screen bg-[#0c0c0c] text-white px-4 md:px-10 py-10">
         <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-8">
           <div>
@@ -60,7 +83,6 @@ export default function Home() {
               )}
             </div>
           </div>
-
           <div>
             <label className="block mb-2 text-sm font-semibold text-zinc-400">
               Platform
@@ -87,7 +109,6 @@ export default function Home() {
               ))}
             </div>
           </div>
-
           <div>
             <label className="block mb-2 text-sm font-semibold text-zinc-400">
               RAM
@@ -118,7 +139,7 @@ export default function Home() {
         </form>
 
         <div className="mt-12">
-          {loading ? (
+          {loading && games.length === 0 ? (
             <p className="text-center text-sm text-zinc-400">
               Loading games...
             </p>
@@ -127,7 +148,25 @@ export default function Home() {
               Nenhum jogo encontrado com os filtros selecionados.
             </p>
           ) : (
-            <GameGrid games={games} />
+            <>
+              <GameGrid games={games} />
+              <div ref={loadMoreRef} className="h-8" />
+              {loading && (
+                <p className="text-center text-sm text-zinc-400 mt-4">
+                  Carregando mais jogos...
+                </p>
+              )}
+              {error && (
+                <p className="text-center text-sm text-red-400 mt-4">
+                  Erro: {error}
+                </p>
+              )}
+              {!hasMore && !loading && (
+                <p className="text-center text-sm text-zinc-500 mt-4">
+                  Todos os jogos foram carregados.
+                </p>
+              )}
+            </>
           )}
         </div>
       </div>

@@ -2,6 +2,16 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import type { Game } from "../store/game/types";
+import {
+  FaArrowLeft,
+  FaGamepad,
+  FaLaptop,
+  FaLaptopHouse,
+  FaCalendar,
+  FaCode,
+  FaStar,
+  FaWrench,
+} from "react-icons/fa";
 
 export default function GameDetails() {
   const { id } = useParams();
@@ -95,9 +105,12 @@ export default function GameDetails() {
         <div className="flex justify-between items-center mb-6">
           <button
             onClick={() => navigate("/")}
-            className="text-sm hover:underline"
+            className="inline-flex items-center gap-2 text-sm text-zinc-900 dark:text-white hover:cursor-pointer"
+            aria-label="Voltar"
+            title="Voltar"
           >
-            ⬅ Voltar
+            <FaArrowLeft className="h-6 w-6 text-blue-500" aria-hidden />
+            <span>Voltar</span>
           </button>
         </div>
 
@@ -113,20 +126,33 @@ export default function GameDetails() {
           />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm mb-6">
-            <p>
-              🎮 <strong>Gênero:</strong> {game.genre}
+            <p className="inline-flex items-center gap-2">
+              <FaGamepad color="blue" size={20} />
+              <strong>Gênero:</strong>
+              <span>{game.genre}</span>
             </p>
-            <p>
-              💻 <strong>Plataforma:</strong> {game.platform}
+            <p className="inline-flex items-center gap-2">
+              <FaLaptop color="gray" size={20} />
+              <strong>Plataforma:</strong>
+              <span>{game.platform}</span>
             </p>
-            <p>
-              🏢 <strong>Publisher:</strong> {game.publisher}
+
+            <p className="inline-flex items-center gap-2">
+              <FaLaptopHouse color="gray" size={20} />
+              <strong>Publisher:</strong>
+              <span>{game.publisher}</span>
             </p>
-            <p>
-              👨‍💻 <strong>Developer:</strong> {game.developer}
+
+            <p className="inline-flex items-center gap-2">
+              <FaCode color="gray" size={20} />
+              <strong>Developer:</strong>
+              <span>{game.developer}</span>
             </p>
-            <p>
-              📅 <strong>Lançamento:</strong> {game.release_date}
+
+            <p className="inline-flex items-center gap-2">
+              <FaCalendar color="gray" size={20} />
+              <strong>Lançamento:</strong>
+              <span>{game.release_date}</span>
             </p>
           </div>
 
@@ -141,18 +167,25 @@ export default function GameDetails() {
             </a>
             <button
               onClick={toggleFavorite}
-              className="text-yellow-400 text-sm"
+              className="inline-flex items-center gap-2 text-yellow-400 text-sm hover:text-yellow-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400 rounded"
+              aria-pressed={isFavorite}
             >
-              ⭐{" "}
-              {isFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+              <FaStar className="h-5 w-5" aria-hidden />
+              <span>
+                {isFavorite
+                  ? "Remover dos favoritos"
+                  : "Adicionar aos favoritos"}
+              </span>
             </button>
           </div>
 
           {specs && (
             <div className="bg-zinc-800 rounded-lg p-4">
-              <h2 className="text-lg font-semibold mb-3">
-                🛠️ Requisitos mínimos:
+              <h2 className="mb-3 flex items-center gap-2 text-lg font-semibold text-white">
+                <FaWrench className="h-6 w-6" aria-hidden />
+                <span>Requisitos mínimos:</span>
               </h2>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                 <div>
                   <p>
@@ -171,10 +204,6 @@ export default function GameDetails() {
                   </p>
                   <p>
                     <strong>Placa de Vídeo:</strong> {specs.graphics}
-                  </p>
-                  <p>
-                    <strong>Idade recomendada:</strong>{" "}
-                    {specs.additionalNotes || "-"}
                   </p>
                 </div>
               </div>

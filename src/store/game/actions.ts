@@ -4,13 +4,11 @@ import type { Game, GameState } from "./types";
 
 const ramCache = new Map<string, string>();
 
-// 👇 base de API: dev/test -> /api (proxy/MSW); prod -> FreeToGame
 const API_BASE =
   import.meta.env.DEV || import.meta.env.MODE === "test"
     ? "/api"
     : "https://www.freetogame.com/api";
 
-// Base do endpoint de specs (Koyeb) vinda do .env
 const SPECS_API = String(import.meta.env.VITE_SPECS_API || "").replace(
   /\/$/,
   ""
@@ -22,7 +20,6 @@ export const fetchGames = createAsyncThunk(
     const state = getState() as { game: GameState };
 
     try {
-      // 👇 trocado para usar API_BASE
       const res = await axios.get<Game[]>(`${API_BASE}/games`);
       const games = res.data;
 

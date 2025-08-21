@@ -19,7 +19,7 @@ function WithAxiosMock({ children }: any) {
   );
 }
 
-function Restore({ onCleanup }: { onCleanup: () => void }) {
+function Restore({}: { onCleanup: () => void }) {
   return null as unknown as JSX.Element;
 }
 

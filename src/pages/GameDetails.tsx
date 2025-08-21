@@ -15,12 +15,12 @@ import {
 export default function GameDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [games, setGames] = useState<Game[]>([]);
+  const [, setGames] = useState<Game[]>([]);
   const [game, setGame] = useState<Game | null>(null);
   const [specs, setSpecs] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [isFavorite, setIsFavorite] = useState(false);
+  const [, setIsFavorite] = useState(false);
 
   const SPECS_API = String(import.meta.env.VITE_SPECS_API || "").replace(
     /\/$/,
@@ -31,15 +31,6 @@ export default function GameDetails() {
     const saved = JSON.parse(localStorage.getItem("favorites") || "[]");
     setIsFavorite(saved.includes(Number(id)));
   }, [id]);
-
-  const toggleFavorite = () => {
-    const saved = JSON.parse(localStorage.getItem("favorites") || "[]");
-    const updated = saved.includes(Number(id))
-      ? saved.filter((favId: number) => favId !== Number(id))
-      : [...saved, Number(id)];
-    localStorage.setItem("favorites", JSON.stringify(updated));
-    setIsFavorite(updated.includes(Number(id)));
-  };
 
   const fetchData = async () => {
     setLoading(true);

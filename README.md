@@ -27,34 +27,6 @@ Aplicação web construída com React 19 + Redux Toolkit + TailwindCSS, que perm
 
 ---
 
-### 🔁 Backend (API de scraping)
-
-A aplicação depende de um pequeno servidor Node.js que faz scraping de requisitos técnicos dos jogos (ex: RAM mínima).  
-Antes de iniciar o frontend, **é necessário rodar esse backend**.
-
-1. Clone o repositório do backend:
-
-   ```bash
-   git clone https://github.com/jhonatan09/gamerpickerapi.git
-   cd gamerpickerapi
-   ```
-
-2. Instale as dependências:
-
-   ```bash
-   npm install
-   ```
-
-3. Inicie o servidor:
-
-   ```bash
-   npm start
-   ```
-
-   A API estará disponível em `http://localhost:3000/specs`
-
----
-
 ### 💻 Frontend
 
 1. Clone este repositório:

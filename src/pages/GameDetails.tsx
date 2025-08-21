@@ -9,7 +9,6 @@ import {
   FaLaptopHouse,
   FaCalendar,
   FaCode,
-  FaStar,
   FaWrench,
 } from "react-icons/fa";
 
@@ -22,6 +21,11 @@ export default function GameDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
+
+  const SPECS_API = String(import.meta.env.VITE_SPECS_API || "").replace(
+    /\/$/,
+    ""
+  );
 
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem("favorites") || "[]");
@@ -46,11 +50,25 @@ export default function GameDetails() {
       const foundGame = res.data.find((g) => g.id === Number(id));
       setGame(foundGame || null);
 
-      if (foundGame) {
-        const specsRes = await axios.get("http://localhost:3000/specs", {
+      if (foundGame && SPECS_API) {
+        const specsRes = await axios.get(`${SPECS_API}/specs`, {
           params: { url: foundGame.freetogame_profile_url },
+
+          validateStatus: (s) => (s >= 200 && s < 300) || s === 204,
+          timeout: 20000,
         });
-        setSpecs(specsRes.data);
+
+        if (
+          specsRes.status === 204 ||
+          !specsRes.data ||
+          !Object.keys(specsRes.data).length
+        ) {
+          setSpecs(null);
+        } else {
+          setSpecs(specsRes.data);
+        }
+      } else {
+        setSpecs(null);
       }
     } catch (err) {
       console.error("Erro ao buscar detalhes do jogo:", err);
@@ -154,29 +172,6 @@ export default function GameDetails() {
               <strong>Lançamento:</strong>
               <span>{game.release_date}</span>
             </p>
-          </div>
-
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4">
-            <a
-              href={game.game_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-400 underline text-sm"
-            >
-              Acessar página do jogo
-            </a>
-            <button
-              onClick={toggleFavorite}
-              className="inline-flex items-center gap-2 text-yellow-400 text-sm hover:text-yellow-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400 rounded"
-              aria-pressed={isFavorite}
-            >
-              <FaStar className="h-5 w-5" aria-hidden />
-              <span>
-                {isFavorite
-                  ? "Remover dos favoritos"
-                  : "Adicionar aos favoritos"}
-              </span>
-            </button>
           </div>
 
           {specs && (

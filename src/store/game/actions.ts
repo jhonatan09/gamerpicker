@@ -4,6 +4,11 @@ import type { Game, GameState } from "./types";
 
 const ramCache = new Map<string, string>();
 
+const SPECS_API = String(import.meta.env.VITE_SPECS_API || "").replace(
+  /\/$/,
+  ""
+);
+
 export const fetchGames = createAsyncThunk(
   "game/fetchGames",
   async (_, { getState }) => {
@@ -27,20 +32,34 @@ export const fetchGames = createAsyncThunk(
       const scrapedGames = await Promise.all(
         toScrape.map(async (game) => {
           try {
-            const specsRes = await axios.get("http://localhost:3000/specs", {
+            if (!SPECS_API) {
+              ramCache.set(game.freetogame_profile_url, "N/A");
+              return { ...game, min_ram: "N/A" };
+            }
+
+            const specsRes = await axios.get(`${SPECS_API}/specs`, {
               params: { url: game.freetogame_profile_url },
+              validateStatus: (s) => (s >= 200 && s < 300) || s === 204,
+              timeout: 20000,
             });
 
-            const memoryStr =
-              specsRes.data?.memory || specsRes.data?.Memory || "";
-            let min_ram = "N/A";
+            if (specsRes.status === 204 || !specsRes.data) {
+              ramCache.set(game.freetogame_profile_url, "N/A");
+              return { ...game, min_ram: "N/A" };
+            }
 
+            const memoryStr =
+              (Object.entries(specsRes.data).find(
+                ([k]) => k.toLowerCase() === "memory"
+              )?.[1] as string) || "";
+
+            let min_ram = "N/A";
             if (memoryStr) {
               const ramMatch = memoryStr.match(/\d+/);
               if (ramMatch) {
                 const value = parseInt(ramMatch[0], 10);
                 if (/mb/i.test(memoryStr)) {
-                  min_ram = Math.ceil(value / 1024).toString();
+                  min_ram = Math.ceil(value / 1024).toString(); // MB -> GB
                 } else {
                   min_ram = value.toString();
                 }

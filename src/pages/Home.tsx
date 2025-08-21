@@ -49,7 +49,7 @@ export default function Home() {
   );
 
   return (
-    <div className="min-h-screen bg-white text-zinc-900 dark:bg-[#111] dark:text-white transition-colors duration-300 pt-24">
+    <div className="min-h-screen bg-white text-zinc-900 dark:bg-[#111] dark:text-white transition-colors duration-300">
       <div className="min-h-screen bg-[#0c0c0c] text-white px-4 md:px-10 py-10">
         <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-8">
           <div>

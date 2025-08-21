@@ -15,6 +15,8 @@ import {
 export default function GameDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
+
+  // evitamos variáveis "não usadas"
   const [, setGames] = useState<Game[]>([]);
   const [game, setGame] = useState<Game | null>(null);
   const [specs, setSpecs] = useState<any>(null);
@@ -22,6 +24,13 @@ export default function GameDetails() {
   const [error, setError] = useState(false);
   const [, setIsFavorite] = useState(false);
 
+  // dev/test usa proxy /api; produção usa FreeToGame
+  const API_BASE =
+    import.meta.env.DEV || import.meta.env.MODE === "test"
+      ? "/api"
+      : "https://www.freetogame.com/api";
+
+  // base do scraper
   const SPECS_API = String(import.meta.env.VITE_SPECS_API || "").replace(
     /\/$/,
     ""
@@ -36,15 +45,15 @@ export default function GameDetails() {
     setLoading(true);
     setError(false);
     try {
-      const res = await axios.get<Game[]>("/api/games");
+      const res = await axios.get<Game[]>(`${API_BASE}/games`);
       setGames(res.data);
+
       const foundGame = res.data.find((g) => g.id === Number(id));
       setGame(foundGame || null);
 
       if (foundGame && SPECS_API) {
         const specsRes = await axios.get(`${SPECS_API}/specs`, {
           params: { url: foundGame.freetogame_profile_url },
-
           validateStatus: (s) => (s >= 200 && s < 300) || s === 204,
           timeout: 20000,
         });

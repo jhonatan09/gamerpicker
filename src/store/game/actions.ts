@@ -4,6 +4,13 @@ import type { Game, GameState } from "./types";
 
 const ramCache = new Map<string, string>();
 
+// 👇 base de API: dev/test -> /api (proxy/MSW); prod -> FreeToGame
+const API_BASE =
+  import.meta.env.DEV || import.meta.env.MODE === "test"
+    ? "/api"
+    : "https://www.freetogame.com/api";
+
+// Base do endpoint de specs (Koyeb) vinda do .env
 const SPECS_API = String(import.meta.env.VITE_SPECS_API || "").replace(
   /\/$/,
   ""
@@ -15,7 +22,8 @@ export const fetchGames = createAsyncThunk(
     const state = getState() as { game: GameState };
 
     try {
-      const res = await axios.get<Game[]>("/api/games");
+      // 👇 trocado para usar API_BASE
+      const res = await axios.get<Game[]>(`${API_BASE}/games`);
       const games = res.data;
 
       const gamesWithCache = games.filter((game) =>
@@ -59,7 +67,7 @@ export const fetchGames = createAsyncThunk(
               if (ramMatch) {
                 const value = parseInt(ramMatch[0], 10);
                 if (/mb/i.test(memoryStr)) {
-                  min_ram = Math.ceil(value / 1024).toString(); // MB -> GB
+                  min_ram = Math.ceil(value / 1024).toString();
                 } else {
                   min_ram = value.toString();
                 }
@@ -68,7 +76,7 @@ export const fetchGames = createAsyncThunk(
 
             ramCache.set(game.freetogame_profile_url, min_ram);
             return { ...game, min_ram };
-          } catch (e) {
+          } catch {
             ramCache.set(game.freetogame_profile_url, "N/A");
             return { ...game, min_ram: "N/A" };
           }
@@ -90,9 +98,7 @@ export const fetchGames = createAsyncThunk(
         const ramStr = game.min_ram;
         const ramNum = parseInt(ramStr.replace(/[^\d]/g, ""), 10);
 
-        if (!ramStr || ramStr === "N/A" || isNaN(ramNum)) {
-          return false;
-        }
+        if (!ramStr || ramStr === "N/A" || isNaN(ramNum)) return false;
 
         const ramMatch = !minRamFilter || ramNum <= minRamFilter;
 
